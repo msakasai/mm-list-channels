@@ -6,6 +6,7 @@ Post channel list.
 https://mattermost.com/  
 https://api.mattermost.com/
 
+Use [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/index.html).
 
 ### setup
 
