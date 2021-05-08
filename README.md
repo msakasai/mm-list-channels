@@ -1,5 +1,12 @@
 # mm-list-channels
 
+Get mattermost public channel list.  
+Post channel list.
+
+https://mattermost.com/  
+https://api.mattermost.com/
+
+
 ### setup
 
 template.yaml
