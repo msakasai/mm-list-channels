@@ -1,0 +1,9 @@
+{
+    "queryStringParameters": {
+        "channel_id": "xxxxxxxxxx",
+        "team_id": "xxxxxxxxxx",
+        "token": "xxxxxxxxxx",
+        "user_id": "xxxxx"
+    },
+    "body": null
+}
