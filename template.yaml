@@ -5,37 +5,88 @@ Description: >
 
   Sample SAM Template for mm-list-channels
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
+    Runtime: python3.8
     Timeout: 30
+    Environment:
+      Variables:
+        LOG_LEVEL: INFO
+        POWERTOOLS_SERVICE_NAME: MmListChannels
+        MM_BASE_URL: ''
+        MM_TEAM_ID: ''
+        MM_POST_CHANNEL_ID: ''
+        MM_TOKEN: ''
+        MM_SLACH_CMD_TOKEN: ''
 
 Resources:
   MmListChannelsFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: functions/
       Handler: app.lambda_handler
-      Runtime: python3.8
       Events:
         MmListChannels:
           Type: Schedule
           Properties:
             Schedule: 'rate(20 days)'
             Enabled: False
-      Environment:
-        Variables:
-          LOG_LEVEL: INFO
-          POWERTOOLS_SERVICE_NAME: MmListChannels
-          MM_BASE_URL: ''
-          MM_TEAM_ID: ''
-          MM_POST_CHANNEL_ID: ''
-          MM_TOKEN: ''
   MmListChannelsFuncLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${MmListChannelsFunction}
       RetentionInDays: 60
+
+  MmListChannelsApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/
+      Handler: app.api_handler
+      Runtime: python3.8
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /channels
+            Method: get
+            RestApiId:
+              Ref: MmListChannelsApi
+  MmListChannelsApiFuncLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${MmListChannelsApiFunction}
+      RetentionInDays: 60
+
+  MmListChannelsApiAuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/
+      Handler: auth.lambda_handler
+  MmListChannelsApiAuthFuncLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${MmListChannelsApiAuthFunction}
+      RetentionInDays: 60
+      
+  MmListChannelsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      CacheClusterEnabled: false
+      Auth:
+        DefaultAuthorizer: LambdaAuthorizer
+        Authorizers:
+          LambdaAuthorizer:
+            FunctionArn: !GetAtt MmListChannelsApiAuthFunction.Arn
+            Identity:
+              Headers:
+                - Authorization
+              ReauthorizeEvery: 0
+      MethodSettings:
+        - HttpMethod: '*'
+          ResourcePath: '/*'
+          ThrottlingBurstLimit: 20
+          ThrottlingRateLimit: 5
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
