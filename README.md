@@ -25,12 +25,20 @@ sam build --use-container
 
 ### local invoke
 
+- EventBridge Channel list
+
 ```bash
 sam local invoke MmListChannelsFunction -e events/event.json
+```
+
+- API Gateway Channel list
+
+```bash
+sam local invoke MmListChannelsApiFunction -e events/api_event.json
 ```
 
 ### deploy
 
 ```bash
-sam deploy --guided 
+sam deploy --guided [--profile xxxx]
 ```
