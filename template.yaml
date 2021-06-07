@@ -30,6 +30,7 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: 'rate(20 days)'
+            # Schedule: 'cron(0 0 ? * MON *)'  # cron設定する場合（ex. 毎週月曜GMT0:00（=JST9:00））
             Enabled: False
   MmListChannelsFuncLogGroup:
     Type: AWS::Logs::LogGroup
